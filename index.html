@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Digitaler Glückskeks</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #spruch {
+      margin-top: 20px;
+      font-size: 1.2em;
+      display: none;
+    }
+    img {
+      cursor: pointer;
+      width: 200px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🥠 Klick auf den Glückskeks</h1>
+
+  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Fortune_cookie.jpg"
+       alt="Glückskeks"
+       onclick="oeffneKeks()">
+
+  <div id="spruch">✨ Dein persönlicher Spruch hier ✨</div>
+
+  <script>
+    function oeffneKeks() {
+      document.getElementById("spruch").style.display = "block";
+    }
+  </script>
+
+</body>
+</html>
