@@ -1,75 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Digitaler Glückskeks</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cookie of Destiny</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding-top: 50px;
+    :root{
+      --bg:#f7f6f3;
+      --card:#fff;
+      --accent:#c07a2a; /* cookie color */
+      --chip:#45290e;
+      --text:#222;
     }
-    #spruch {
-      margin-top: 20px;
-      font-size: 1.2em;
-      display: none;
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,var(--bg),#efecea);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text);
+      padding:24px;
     }
-    .keks-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      display: inline-block;
-      width: 200px;
-      line-height: 0;
+    .card{
+      width:min(720px,95%);
+      background:var(--card);
+      border-radius:16px;
+      padding:34px;
+      box-shadow:0 10px 30px rgba(18,18,18,0.08);
+      text-align:center;
     }
-    .keks-svg {
-      width: 100%;
-      height: auto;
-      transition: transform 120ms ease;
-      will-change: transform;
+    h1{margin:0 0 8px;font-size:1.4rem}
+    p.lead{margin:0 0 20px;color:#555}
+
+    .stage{position:relative;min-height:240px;display:flex;align-items:center;justify-content:center}
+
+    /* Cookie visual */
+    .cookie{
+      width:160px;height:160px;border-radius:50%;background:conic-gradient(from 200deg,#d99247,#c07a2a 40%,#d08b3a 70%);
+      box-shadow:inset -8px -8px 24px rgba(255,255,255,0.15), 0 8px 30px rgba(12,12,12,0.12);
+      position:relative;cursor:pointer;display:inline-block; transition:transform 320ms cubic-bezier(.2,.9,.2,1), opacity 300ms;
+      will-change:transform,opacity;
+      outline:none; border:4px solid rgba(255,255,255,0.2);
     }
-    .keks-btn:active .keks-svg {
-      transform: scale(0.95) translateY(2px);
+    .cookie:focus{box-shadow:0 0 0 6px rgba(192,122,42,0.16)}
+    .chip{position:absolute;background:var(--chip);width:18px;height:12px;border-radius:6px;transform:rotate(-12deg);box-shadow:inset -2px -1px 3px rgba(255,255,255,0.05)}
+    .chip.c1{top:22px;left:46px;width:22px;height:14px}
+    .chip.c2{top:54px;left:98px}
+    .chip.c3{top:92px;left:34px;width:16px;height:10px}
+    .chip.c4{top:78px;left:122px;width:20px;height:13px}
+
+    /* Spruch (hidden by default) */
+    .spruch{
+      position:absolute;left:50%;transform:translateX(-50%) translateY(24px);
+      bottom:18px;max-width:86%;background:rgba(255,255,255,0.98);padding:18px;border-radius:10px;box-shadow:0 8px 20px rgba(12,12,12,0.08);
+      opacity:0;pointer-events:none;transition:opacity 420ms ease, transform 420ms cubic-bezier(.2,.9,.2,1);
+      color:var(--text);font-size:1rem;line-height:1.4;
     }
+
+    /* Revealed state */
+    .stage.revealed .spruch{
+      opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0);
+    }
+
+    /* Cookie transforms when revealed */
+    .stage.revealed .cookie{
+      transform:translateY(-18px) scale(0.96);
+      opacity:0.98;
+    }
+
+    /* Click animation (quick press) */
+    .cookie.animate-click{animation:cookie-press 420ms cubic-bezier(.2,.9,.2,1)}
+    @keyframes cookie-press{0%{transform:scale(1)}30%{transform:scale(0.88)}60%{transform:scale(1.03) translateY(-6px)}100%{transform:scale(0.96) translateY(-18px)}}
+
+    /* Small screen adjustments */
+    @media (max-width:420px){
+      .cookie{width:120px;height:120px}
+    }
+
+    /* Helper hint */
+    .hint{font-size:.9rem;color:#7a7a7a;margin-top:12px}
+
   </style>
 </head>
 <body>
+  <main class="card" role="main">
+    <h1>Cookie of Destiny</h1>
+    <p class="lead">Klicke auf den Keks — er offenbart dir deinen Spruch.</p>
 
-  <h1>🥠 Klick auf den Glückskeks</h1>
+    <div class="stage" id="stage">
+      <button class="cookie" id="cookie" aria-expanded="false" aria-controls="spruch" title="Keks klicken">
+        <span class="chip c1" aria-hidden="true"></span>
+        <span class="chip c2" aria-hidden="true"></span>
+        <span class="chip c3" aria-hidden="true"></span>
+        <span class="chip c4" aria-hidden="true"></span>
+      </button>
 
-  <button class="keks-btn" onclick="oeffneKeks()" aria-label="Glückskeks">
-    <!-- Simple inline SVG cookie illustration -->
-    <svg class="keks-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="false">
-      <title>Glückskeks</title>
-      <defs>
-        <radialGradient id="g" cx="40%" cy="30%" r="80%">
-          <stop offset="0%" stop-color="#ffe7a8" />
-          <stop offset="100%" stop-color="#f2b85b" />
-        </radialGradient>
-      </defs>
-      <!-- cookie base -->
-      <circle cx="60" cy="60" r="48" fill="url(#g)" stroke="#d99a3a" stroke-width="2" />
-      <!-- chocolate chips -->
-      <ellipse cx="40" cy="45" rx="4.5" ry="6" fill="#5a381f" transform="rotate(-20 40 45)" />
-      <ellipse cx="70" cy="50" rx="5" ry="6.5" fill="#4a2e1a" transform="rotate(10 70 50)" />
-      <ellipse cx="55" cy="75" rx="4" ry="5" fill="#4a2e1a" transform="rotate(-10 55 75)" />
-      <ellipse cx="85" cy="72" rx="3.5" ry="4.5" fill="#5a381f" transform="rotate(25 85 72)" />
-      <ellipse cx="30" cy="72" rx="3" ry="4" fill="#5a381f" transform="rotate(-30 30 72)" />
-      <!-- small highlight -->
-      <path d="M38 30c6-4 18-6 28-2" stroke="#fff7d9" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6" />
-    </svg>
-  </button>
+      <div class="spruch" id="spruch" role="status" aria-live="polite">
+        "Das Geheimnis des Erfolgs ist, den gewöhnlichen Dingen eine ungewöhnlich gute Aufmerksamkeit zu schenken."
+      </div>
+    </div>
 
-  <div id="spruch">✨ Dein persönlicher Spruch hier ✨</div>
+    <div class="hint">Tipp: erneut klicken, um den Spruch auszublenden.</div>
+  </main>
 
   <script>
-    function oeffneKeks() {
-      const s = document.getElementById("spruch");
-      s.textContent = "Du verzauberst nicht nur mit deiner Ausstrahlung, mit dir kann man sogar reden";
-      s.style.display = "block";
-    }
-  </script>
+    (function(){
+      const stage = document.getElementById('stage');
+      const cookie = document.getElementById('cookie');
+      const spruch = document.getElementById('spruch');
 
+      let animTimeout = null;
+
+      function toggleReveal(){
+        const willReveal = !stage.classList.contains('revealed');
+
+        // play click animation on cookie
+        cookie.classList.remove('animate-click');
+        // force reflow to restart animation
+        void cookie.offsetWidth;
+        cookie.classList.add('animate-click');
+
+        // set aria attribute
+        cookie.setAttribute('aria-expanded', willReveal);
+
+        if(willReveal){
+          stage.classList.add('revealed');
+          // focus spruch for screen readers after animation ends
+          clearTimeout(animTimeout);
+          animTimeout = setTimeout(()=> spruch.focus && spruch.focus(), 420);
+        } else {
+          stage.classList.remove('revealed');
+        }
+      }
+
+      cookie.addEventListener('click', toggleReveal);
+      // also support keyboard activation
+      cookie.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault(); toggleReveal();
+        }
+      });
+
+      // make spruch focusable when revealed
+      spruch.tabIndex = -1;
+
+    })();
+  </script>
 </body>
 </html>
